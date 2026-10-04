@@ -1,1 +1,27 @@
-###
+###***ARGOCD APPLICATION***###
+
+apiVersion: argoproj.io/v1alpha1              # Argo CD API version
+kind: Application                             # Argo CD Application resource
+
+metadata:
+  name: nginx-prod                            # Argo CD Application name
+  namespace: argocd                           # Argo CD Application lives in argocd namespace
+
+spec:
+  project: default                             # Argo CD project
+  source:
+    repoURL: https://github.com/azeemosiddiqui/ArgoCD.git
+    targetRevision: main                       # Git branch
+    path: argocd-apps/prod-nginx-manifests    # Folder containing nginx manifests
+
+  destination:
+    server: https://kubernetes.default.svc     # Current Kubernetes cluster
+    namespace: prod                            # Deploy application into prod namespace
+
+  syncPolicy:
+    automated:
+      prune: true                              # Remove resources deleted from Git
+      selfHeal: true                           # Automatically fix manual changes
+
+    syncOptions:
+    - CreateNamespace=true                     # Create prod namespace if it doesn't exist
